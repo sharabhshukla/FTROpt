@@ -18,6 +18,7 @@ class FTROpt:
         self.z_cost.index = self.nodes
         self.z_rev.index = self.nodes
         self.shift_factors.set_index("Name", inplace=True)
+        self.path_pref.index = self.path_pref.columns.tolist()
 
     def optimize_portfolio(self):
         model = ConcreteModel()
@@ -83,27 +84,31 @@ class FTROpt:
 
         model.min_allocated_mw_constraint = Constraint(model.arcs, rule=min_allocated_mw_constraint)
 
-        # Objective: Maximize net revenue (revenue - cost)
+        def path_pref_objective(model):
+            return model.portfolio_path_pref == sum(model.path_pref[i, j] * model.arc_indicator[i, j] for i, j in model.arcs)
+
+        model.path_pref_cons = Constraint(rule=path_pref_objective)
+
+        # Step 1: Solve for the first objective (net revenue)
         def objective_revenue(model):
-            return sum(
-                model.allocated_mw[i, j] * (model.revs[i, j] - model.costs[i, j]) for i, j
-                in model.arcs)
+            return (0.9*sum(model.allocated_mw[i, j] * (model.revs[i, j] - model.costs[i, j]) for i, j in model.arcs) + 0.1*
+                    model.portfolio_path_pref)
 
         model.Objective = Objective(rule=objective_revenue, sense=maximize)
-
-        def path_pref_objective(model):
-            return model.portfolio_path_pref == sum(model.path_pref[i,j] * model.arc_indicator[i,j] for i,j in model.arcs)
 
         solver = SolverFactory("cplex", executable="/Applications/CPLEX_Studio2211/cplex/bin/arm64_osx/cplex")
         solver.options['mipgap'] = 0.01
         solver.options['threads'] = 8
+
+        # Solve the model
         solver_status = solver.solve(model, tee=True)
 
-        # Check solver status and termination condition
-        if (solver_status.solver.status != SolverStatus.ok) or (
-                solver_status.solver.termination_condition != TerminationCondition.optimal):
-            raise Exception("Optimality target not achieved. Solver Status: {}, Termination Condition: {}".format(
-                solver_status.solver.status, solver_status.solver.termination_condition))
+        # Check solver status and store the optimal revenue value
+        if (solver_status.solver.status == SolverStatus.ok) and (
+                solver_status.solver.termination_condition == TerminationCondition.optimal):
+            optimal_revenue = value(model.Objective)
+        else:
+            raise Exception("Optimal solution not found for the first objective.")
 
         allocated_mw = np.zeros(shape=(len(self.nodes), len(self.nodes)))
         for i, nr in enumerate(self.nodes):

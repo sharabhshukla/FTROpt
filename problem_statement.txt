@@ -1,0 +1,28 @@
+
+
+Problem set:
+Please find attached a zip file PS2.If you extract it, you will find 6 files. The objective of this
+exercise is to develop a portfolio for FTR optimization. Please read more about FTR before approaching
+this task. There are 346 nodes in this sample set (Nodes are basically the column names in Z_Cost File. I
+have masked them for the sake of confidentiality). You could get any combination of these nodes as
+Source and Sinks. A FTR Path is Source to Sink, basically Node A to Node B.
+How to read Z_Cost, Z_Rev, Z_MPnsym files:
+All the paths are represented in a Matrix form here. Hence the diagonals are zeros. To access a
+datapoint Ex: N11 (Source) to N6 (Sink), first you look for the position of the source .. (Column K which is
+11). Then the sink (Column F which is 6), So the value you are looking for is in cell F12
+What is Decomposition of a portfolio ?
+The final portfolio should have Source, Sink and MW values. The sum of MW of a path times the
+(Shift factor of Source – Shift factor of Sink) is called the Decomposition (or the exposure of the portfolio
+to this Binding constraint)
+Limit your total selection to 1500 paths.
+Limit per path MW to 50 MW
+Z_BCLimits: This one contains different Binding constraints named A1 to An. They all have different min
+and Max values.
+Z_SF: These are the Shift factors of the above Binding constraints for the 346 nodes.
+Lets assume the Z_Cost is the cost of these paths and Z_Rev are the revenue of these paths.
+Ultimately, we want the portfolio to obey the min and max for each of these constraints (Portfolio
+decomposition). You could maximize rev, minimize cost or get creative with the objective function.
+Now, if you want to get even more creative, Use the Z_MPUnSym file to add it to your objective or
+constraint list. A higher value here means a preferred path in the portfolio. Use the Z_Hold_Agg file, if
+you want to limit the total MW you source or Sink in the portfolio. (Additional efforts if you want to
+impress / go deep).
