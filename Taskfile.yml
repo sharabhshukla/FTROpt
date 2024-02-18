@@ -1,0 +1,27 @@
+version: 3
+
+
+tasks:
+  create-python-env:
+    cmds:
+      - python -m venv .venv && source .venv/bin/activate
+
+  install-packages:
+    cmds:
+      - pip install -r requirements.txt
+
+  run:
+    desc: Runs the FTR optimization model with default dataa files located in data/raw directory
+    cmds:
+      - python main.py
+      - task: clean-unwanted
+
+  what-is-this:
+    vars:
+       NAMEOFAPP: FtrOptApp
+    cmds:
+      - echo Hello and welcome to {{.NAMEOFAPP}} optimization model package!!
+
+  clean-unwanted:
+    cmds:
+      - rm -rf *.log
