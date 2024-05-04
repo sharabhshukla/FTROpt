@@ -1,5 +1,5 @@
 ## Introduction
-The FTR (Financial Transmission Rights) Optimization model aims to maximize the net revenue from transmission rights within a power grid network. It considers costs, revenues, binding constraints, and shift factors associated with different transmission paths.
+The FTR (Financial Transmission Rights) Optimization model aims to maximize the net revenue from transmission rights within a power grid network. It considers costs, revenues, binding constraints, and shift factors associated with different transmission paths. This was a skill aassesement project at Trafigura (Denever Energy Group), one of the largest commodities management firm. The data is anonymized for privacy it is good data for FTR coming from one of the largest traders in the business.
 
 ## Data Preparation
 
